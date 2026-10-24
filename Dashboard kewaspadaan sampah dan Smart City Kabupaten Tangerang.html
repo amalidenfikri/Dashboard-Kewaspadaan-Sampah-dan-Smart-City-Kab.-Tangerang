@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Platform kewaspadaan sampah dan Smart City Kabupaten Tangerang</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f7f6;--sf:#fff;--ink:#14272c;--mu:#556a6f;--ln:#d6e2e0;--br:#0f4c5c;--hi:#b3261e;--hib:#fdeceb;--md:#8a5200;--mdb:#fff3dc;--lo:#14704f;--lob:#e3f5ec;padding-top:env(safe-area-inset-top,0)}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1b1f;--sf:#14292f;--ink:#e6f1ef;--mu:#9bb4b8;--ln:#264249;--br:#6cc3d5;--hi:#ff8f87;--hib:#3a1c1b;--md:#f0b45a;--mdb:#38290f;--lo:#6fd9a8;--lob:#12352a}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Source Sans 3",system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:26px 18px 60px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Segoe UI",sans-serif;line-height:1.15;margin:0}
+h1{font-size:clamp(26px,4.6vw,42px);font-weight:800}h2{font-size:24px;font-weight:800;margin:44px 0 10px}h3{font-size:17px;font-weight:600}
+p{margin:6px 0;max-width:70ch}.mu{color:var(--mu)}.sm{font-size:14px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:18px 0 8px}
+label{display:grid;gap:3px;font-size:14px;color:var(--mu)}
+input,select,button{font:600 15px "Source Sans 3",sans-serif;padding:9px 12px;border-radius:10px;border:1px solid var(--ln);background:var(--sf);color:var(--ink)}
+button{cursor:pointer;background:var(--br);color:var(--bg);border-color:var(--br)}button.g{background:var(--sf);color:var(--ink);border-color:var(--ln)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--br);outline-offset:2px}
+.nt{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:6px 0}.nt .ok{color:var(--lo)}.nt .warn{color:var(--md)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:14px 16px}
+.card .v{font:800 30px "Bricolage Grotesque",sans-serif;margin:4px 0}.card .s{font-size:13px;color:var(--mu)}
+.pill{display:inline-block;font-weight:600;font-size:13px;padding:2px 10px;border-radius:999px;margin:6px 0}
+.c2{background:var(--hib);color:var(--hi)}.c1{background:var(--mdb);color:var(--md)}.c0{background:var(--lob);color:var(--lo)}
+.card p{font-size:14px;color:var(--mu);margin:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.tile{padding:10px 8px;border-radius:10px;border:2px solid var(--ln);background:var(--sf);color:var(--ink);font:600 14px "Source Sans 3",sans-serif;text-align:left}
+.tile small{display:block;font-weight:400;color:var(--mu)}.tile.t2{background:var(--hib)}.tile.t1{background:var(--mdb)}.tile.t0{background:var(--lob)}.tile.on{border-color:var(--br)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:top}th{color:var(--mu);font-weight:600}
+input{width:110px}.pl .pill{margin:2px 0}.pl h3{display:flex;justify-content:space-between;gap:8px}.pl .ac{margin-top:8px;font-size:14px;color:var(--ink)}ol.rec{padding-left:22px;max-width:76ch}ol.rec li{margin:8px 0}
+footer{margin-top:40px;font-size:14px;color:var(--mu);max-width:78ch}
+</style></head><body><main>
+<h1>Platform kewaspadaan sampah dan ketahanan kota</h1>
+<p class="mu">Kabupaten Tangerang. Data sampah dari SIPSN 2026 digabung dengan prakiraan cuaca BMKG per kecamatan, kualitas udara AQICN, dan sensor Smart Citizen, lalu dinilai dengan aturan ambang batas menjadi level risiko dan rekomendasi.</p>
+<div class="ctl">
+<label>Kecamatan (lokasi BMKG)<select id="kec"></select></label>
+<button id="rl">Muat ulang</button><button id="sc" class="g">Pindai 29 kecamatan</button></div>
+<div class="nt" id="nt" role="status"></div>
+
+<div class="grid" id="kpi" style="margin-top:14px"></div>
+
+<h2>Peta risiko per kecamatan</h2>
+<p class="sm mu">Warna = level tertinggi dari risiko genangan, vektor, bau/jamur, dan pembakaran. Klik “Pindai 29 kecamatan” untuk mengisi semuanya, klik kotak untuk memilih kecamatan.</p>
+<div class="tiles" id="tiles"></div>
+
+<h2>Risk matrix</h2><div class="grid" id="mx"></div>
+
+<h2>Matriks parameter</h2><div class="tw"><table id="pm"></table></div>
+
+<h2>Benchmark SIPSN 2026</h2>
+<p class="sm mu">Posisi Kabupaten Tangerang dibanding nasional dan daerah sebanding.</p>
+<div class="grid" id="bm"></div>
+<div class="tw" style="margin-top:12px"><table id="peer"></table></div>
+
+<h2>Enam pilar Smart City</h2>
+<p class="sm mu">Data sampah, cuaca, dan udara dibaca lewat enam pilar Smart City. Level di tiap kartu adalah tekanan atau risiko, jadi semakin tinggi berarti semakin perlu perhatian.</p>
+<div class="grid pl" id="pl"></div>
+
+<h2>Interpolasi data sampah ke dampak lingkungan</h2>
+<p class="sm mu">Cakupan pengelolaan dihitung bertahap secara linear dari kondisi SIPSN 2026 ke 22,1% pada 2029 (capaian Kab. Bogor, kabupaten dengan timbulan sebanding), lalu dikonversi ke dampak lingkungan. Angka asumsi di bawah bisa diubah, dan semuanya estimasi kasar, bukan hasil ukur.</p>
+<div class="ctl">
+<label>Fraksi organik (%)<input id="i_org" type="number" value="55" min="0" max="100"></label>
+<label>Fraksi plastik (%)<input id="i_pl" type="number" value="17" min="0" max="100"></label>
+<label>Emisi (tCO₂e/ton sampah)<input id="i_ef" type="number" value="0.5" min="0" step="0.1"></label>
+<label>Lindi (m³/ton sampah)<input id="i_lf" type="number" value="0.1" min="0" step="0.05"></label>
+<label>Plastik bocor ke perairan (%)<input id="i_lk" type="number" value="25" min="0" max="100"></label></div>
+<p id="isum"></p>
+<div class="tw"><table id="imp"></table></div>
+
+<h2>Policy recommendation panel</h2><ol class="rec" id="rec"></ol>
+
+
+
+<footer>Sumber data: SIPSN KLH (statistik pengelolaan sampah 2026, diekspor 17 Oktober 2026), BMKG (Data Prakiraan Cuaca Terbuka, data.bmkg.go.id), AQICN/World Air Quality Index, dan Smart Citizen API. Level risiko memakai batas yang ditulis di tabel parameter (sebagian merujuk pedoman WHO untuk PM2.5 dan PM10).</footer>
+
+<script>
+/* ===== PENGATURAN: isi sesuai kebutuhan ===== */
+const CFG={aqiToken:"",            // token gratis dari aqicn.org/data-platform/token
+ aqiCity:"tangerang",
+ bmkgProxy:"",                      // isi bila browser memblokir BMKG (CORS), mis. "https://proxy-kamu/?url="
+ devices:[19686,19684,19682,19695]};// ID device Smart Citizen
+/* ===== DATA SIPSN Kab. Tangerang (diekspor 17/10/2026) ===== */
+const S={tim:2663,pt:4.38,belum:95.62,nas:24.73,peer:22.1,bsuA:123,bsuT:29,bsi:1,psa:66.2,psaN:48.92,bsuK:1.7,bsiK:108};
+const KEC=[["Balaraja","01.1001"],["Jayanti","02.2001"],["Tigaraksa","03.1001"],["Jambe","04.2001"],["Cisoka","05.2001"],["Kresek","06.2001"],["Kronjo","07.2001"],["Mauk","08.2001"],["Kemiri","09.2001"],["Sukadiri","10.2001"],["Rajeg","11.2001"],["Pasar Kemis","12.2001"],["Sukasari","13.1001"],["Kosambi","14.2001"],["Pakuhaji","15.2001"],["Sepatan","16.2001"],["Curug","17.2001"],["Cikupa","18.2001"],["Panongan","19.2001"],["Legok","20.2001"],["Pagedangan","21.2001"],["Cisauk","22.2001"],["Sukamulya","23.2001"],["Teluknaga","24.2001"],["Sindang Jaya","25.2001"],["Sepatan Timur","27.2001"],["Solear","28.2001"],["Gunung Kaler","32.2001"],["Mekar Baru","33.2001"]];
+const SAMPLE={t:31,hu:74,rain:2,desc:"Berawan",aqi:112,pm25:42,pm10:null};
+const LV=["Rendah","Sedang","Tinggi"],$=id=>document.getElementById(id),f1=n=>n.toLocaleString('id-ID',{maximumFractionDigits:1});
+const lv=(v,m,h)=>v>=h?2:v>=m?1:0,C={};let cur={};
+$('kec').innerHTML=KEC.map(([n,c])=>`<option value="${c}">${n}</option>`).join('');$('kec').value="03.1001";
+const nameOf=c=>(KEC.find(k=>k[1]==c)||[""])[0];
+const err=e=>e instanceof TypeError?"diblokir browser (CORS) atau offline":e.message;
+
+async function getBMKG(c){
+ const r=await fetch((CFG.bmkgProxy||"")+"https://api.bmkg.go.id/publik/prakiraan-cuaca?adm4=36.03."+c);
+ if(!r.ok)throw Error("HTTP "+r.status);const j=await r.json();
+ let s=((j.data&&j.data[0]&&j.data[0].cuaca)||[]).flat();if(!s.length)throw Error("data kosong");
+ const t0=Date.now()-3*36e5,nx=s.filter(x=>new Date(x.local_datetime.replace(" ","T")+"+07:00")>=t0);s=(nx.length?nx:s).slice(0,8);
+ const avg=k=>s.reduce((a,x)=>a+(+x[k]||0),0)/s.length;
+ return{t:avg("t"),hu:avg("hu"),rain:s.filter(x=>/hujan|petir/i.test(x.weather_desc||"")).length,desc:s[0].weather_desc,aqi:null};}
+async function getAQI(){
+ if(!CFG.aqiToken)throw Error("token belum diisi di CFG");
+ const r=await fetch(`https://api.waqi.info/feed/${CFG.aqiCity}/?token=${CFG.aqiToken}`),j=await r.json();
+ if(j.status!=="ok")throw Error(String(j.data));const d=j.data,i=d.iaqi||{};
+ return{aqi:+d.aqi,pm25:i.pm25&&i.pm25.v,pm10:i.pm10&&i.pm10.v};}
+async function getDev(id){
+ const r=await fetch("https://api.smartcitizen.me/v0/devices/"+id);if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();
+ const sv=re=>{const s=((d.data&&d.data.sensors)||[]).find(s=>re.test(s.name+" "+(s.description||"")));return s?s.value:null};
+ return{id,name:d.name,t:sv(/temperature/i),hu:sv(/humidity/i),gas:sv(/resistance|voc|iaq/i),upd:d.last_reading_at};}
+
+function engine(w,a){
+ const back=S.belum>90?2:S.belum>50?1:0,cover=S.pt<10?2:S.pt<25?1:0;
+ const flood=Math.min(2,lv(w.rain,1,4)+(back==2&&w.rain>0?1:0));
+ const pts=(w.hu>=70)+(w.t>=26&&w.t<=34)+(w.rain>=1)+(back==2);
+ const vector=pts>=4?2:pts>=2?1:0;
+ const odor=Math.min(2,lv(w.hu,65,80)+(w.t>=32&&back==2?1:0));
+ const burn=Math.max(lv(a.aqi||0,51,101),a.pm25!=null?lv(a.pm25,15.1,35.5):0,a.pm10!=null?lv(a.pm10,45.1,100):0);
+ const e2=100-50*((flood+vector+odor+burn)/4);
+ const stat=.4*Math.min(S.pt/S.nas,1)*100+.15*50+.15*(S.bsuA/(S.bsuA+S.bsuT)*100)+.1*S.psa;
+ const score=Math.round(.6*stat+.4*e2);
+ return{back,cover,flood,vector,odor,burn,score,top:Math.max(flood,vector,odor,burn)};}
+
+function render(w,a,dv){
+ const E=engine(w,a),k=nameOf($('kec').value),dvOk=dv.filter(d=>d.t!=null);
+ const tAvg=dvOk.length?dvOk.reduce((s,d)=>s+ +d.t,0)/dvOk.length:w.t,hAvg=dvOk.length?dvOk.reduce((s,d)=>s+ +d.hu,0)/dvOk.length:w.hu;
+ const K=[["Suhu rata-rata",f1(tAvg)+"°C",dvOk.length?"Smart Citizen, rata-rata device":"BMKG, "+k],["Kelembapan rata-rata",f1(hAvg)+"%",dvOk.length?"Smart Citizen, rata-rata device":"BMKG, "+k],
+ ["Rain watch",w.rain+" dari 8 slot","BMKG, 24 jam ke depan, "+k],["AQI luar ruang",a.aqi??"-","AQICN"+(a.pm25!=null?", PM2.5 "+a.pm25:"")],
+ ["Pembakaran dan pernapasan",LV[E.burn],"AQI dan PM"],["Risiko vektor",LV[E.vector],"Kelembapan, suhu, hujan, tumpukan sampah"],
+ ["Sampah belum terkelola",f1(S.belum)+"%","SIPSN 2026, "+f1(S.tim)+" ton per hari"],["Skor ketahanan",E.score+"/100","Gabungan SIPSN dan kondisi lingkungan"]];
+ $('kpi').innerHTML=K.map(([a1,v,s])=>`<div class="card"><h3>${a1}</h3><div class="v">${v}</div><div class="s">Sumber: ${s}</div></div>`).join('');
+ const M=[["Cakupan pengelolaan",E.cover,`${S.pt}% terkelola. Nasional ${S.nas}%, Kab. Bogor (timbulan sebanding) ${S.peer}%.`],
+ ["Status TPA",2,"Open dumping. Jenis TPA yang paling berisiko bagi lingkungan sekitar."],
+ ["Genangan dan sumbatan sampah",E.flood,`${w.rain} dari 8 prakiraan 3 jam berpotensi hujan (${w.desc||"-"}). Sampah yang tak terangkut mudah menyumbat saluran.`],
+ ["Vektor (DBD, lalat, tikus)",E.vector,`RH ${f1(w.hu)}%, suhu ${f1(w.t)}°C. Genangan dan tumpukan sampah jadi tempat berkembang biak.`],
+ ["Bau, lindi, dan jamur",E.odor,`RH ${f1(w.hu)}% dan suhu ${f1(w.t)}°C mempercepat pembusukan sampah organik.`],
+ ["Pembakaran sampah dan pernapasan",E.burn,`AQI ${a.aqi??"-"}${a.pm25!=null?", PM2.5 "+a.pm25+" µg/m³":""}. Asap pembakaran terbuka memperberat ISPA dan asma.`],
+ ["Tata kelola",1,`Dokumen RIPS ada tapi belum disahkan. Progres sanksi administrasi ${S.psa}%.`],
+ ["Skor ketahanan persampahan",E.score<40?2:E.score<65?1:0,`Skor ${E.score} dari 100. Semakin tinggi semakin siap.`]];
+ $('mx').innerHTML=M.map(([t,l,d])=>`<div class="card"><h3>${t}</h3><span class="pill c${l}">${LV[l]}</span><p>${d}</p></div>`).join('');
+ const P=[["Sampah terkelola",S.pt+"%","Cakupan rendah membuat sampah menumpuk",E.cover,"<10% tinggi, 10-25% sedang, >25% rendah"],
+ ["Kelembapan",f1(w.hu)+"%","Jamur, bau, dan vektor",lv(w.hu,65,80),"≥80% tinggi, 65-80% sedang"],
+ ["Suhu",f1(w.t)+"°C","Pembusukan dan lalat lebih cepat",lv(w.t,28,32),"≥32°C tinggi, 28-32°C sedang"],
+ ["Slot hujan (24 jam)",w.rain+" dari 8","Sampah hanyut dan saluran tersumbat",lv(w.rain,1,4),"≥4 tinggi, 1-3 sedang"],
+ ["AQI luar ruang",a.aqi??"-","Pembakaran terbuka dan ISPA",lv(a.aqi||0,51,101),">100 tinggi, 51-100 sedang"],
+ ["PM2.5 / PM10",(a.pm25??"-")+" / "+(a.pm10??"-"),"Partikel halus dari asap",Math.max(a.pm25!=null?lv(a.pm25,15.1,35.5):0,a.pm10!=null?lv(a.pm10,45.1,100):0),"Pedoman WHO: PM2.5 15 dan PM10 45 µg/m³ (sedang bila lewat, tinggi bila PM2.5>35 atau PM10>100)"]];
+ $('pm').innerHTML="<tr><th>Parameter</th><th>Nilai saat ini</th><th>Korelasi risiko</th><th>Kategori</th><th>Batas parameter</th></tr>"+P.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="pill c${r[3]}">${LV[r[3]]}</span></td><td>${r[4]}</td></tr>`).join('');
+ const R=[`Naikkan cakupan dari ${f1(S.pt)}% ke ${f1(S.peer)}% pada 2029 (setara Kab. Bogor), butuh tambahan kapasitas kelola sekitar ${Math.round(S.tim*(S.peer-S.pt)/100)} ton per hari.`,
+ `Perkuat bank sampah: satu bank sampah induk menopang sekitar ${Math.round(S.bsiK/(S.tim*S.pt/100)*100)}% sampah terkelola, sementara 123 unit aktif rata-rata baru mengelola ±${Math.round(S.bsuK*1000/S.bsuA)} kg per hari. Hidupkan 29 unit yang tidak aktif dan tambah bank sampah induk.`,
+ "Tuntaskan sanksi administrasi dan siapkan penutupan open dumping menuju controlled atau sanitary landfill.",
+ "Sahkan dokumen RIPS agar target dan anggaran punya payung."];
+ if(E.flood)R.push(`Di ${k}: bersihkan saluran dan TPS sebelum hujan, majukan jadwal angkut, dan tutup TPS agar sampah tidak hanyut.`);
+ if(E.vector)R.push("Gencarkan PSN 3M Plus dan angkut sampah yang menampung air (kaleng, ban, plastik).");
+ if(E.odor)R.push("Tutup dan rapikan TPS, benahi saluran lindi, dan percepat angkut sampah organik ke maggot atau kompos.");
+ if(E.burn)R.push("Tegakkan larangan membakar sampah terbuka, patroli titik rawan, dan sarankan masker bagi anak, lansia, dan penderita asma.");
+ R.push("Minta data timbulan dan lokasi TPS per kecamatan ke DLHK agar risiko bisa dipetakan sampai tingkat kecamatan.","Dashboard ini alat kewaspadaan. Keputusan resmi tetap mengikuti DLH, Dinkes, dan data lapangan.");
+ $('rec').innerHTML=R.map(x=>`<li>${x}</li>`).join('');
+cur.E=E;pillars(E,w,a);impact();tiles();}
+
+const g=id=>+$(id).value||0;
+function calc(p){const un=S.tim*(1-p/100),rf=1+((cur.w||SAMPLE).rain/8);
+ return{p,un,org:un*g('i_org')/100,co2:un*g('i_ef')*365/1000,lin:un*g('i_lf')*rf,pl:un*g('i_pl')/100*g('i_lk')/100*365};}
+function impact(){
+ const R=[0,1,2,3].map(i=>({y:2026+i,...calc(S.pt+(S.peer-S.pt)*i/3)})),a=R[0],b=R[3];
+ $('isum').innerHTML=`Pada 2026 sekitar <b>${f1(a.un)} ton/hari</b> sampah tidak terkelola dan diperkirakan melepas <b>${f1(a.co2)} ribu tCO₂e/tahun</b>, <b>${f1(a.lin)} m³/hari</b> lindi, dan <b>${f1(a.pl)} ton/tahun</b> plastik bocor. Bila cakupan naik ke ${f1(S.peer)}% pada 2029, emisi turun sekitar <b>${f1(a.co2-b.co2)} ribu tCO₂e/tahun</b> dan plastik bocor turun <b>${f1(a.pl-b.pl)} ton/tahun</b>. Lindi sudah ikut menghitung hujan ${(cur.w||SAMPLE).rain} dari 8 slot BMKG.`;
+ $('imp').innerHTML="<tr><th>Tahun</th><th>Cakupan terkelola</th><th>Tidak terkelola (ton/hari)</th><th>Organik (ton/hari)</th><th>Emisi (ribu tCO₂e/thn)</th><th>Lindi (m³/hari)</th><th>Plastik bocor (ton/thn)</th></tr>"+R.map(r=>`<tr><td>${r.y}</td><td>${f1(r.p)}%</td><td>${f1(r.un)}</td><td>${f1(r.org)}</td><td>${f1(r.co2)}</td><td>${f1(r.lin)}</td><td>${f1(r.pl)}</td></tr>`).join('');}
+
+function pillars(E,w,a){
+ const c=calc(S.pt),act=S.bsuA/(S.bsuA+S.bsuT)*100;
+ const P=[
+ ["Smart Governance",S.psa<50?2:S.psa<80?1:0,`RIPS belum disahkan dan progres sanksi administrasi baru ${S.psa}%. Data timbulan per kecamatan belum terbuka.`,"Sahkan RIPS, buka data timbulan dan TPS per kecamatan, dan jadikan skor ketahanan ${E.score}/100 sebagai indikator kinerja DLHK."],
+ ["Smart Branding",Math.max(E.burn,E.odor),`AQI ${a.aqi??"-"}, risiko bau ${LV[E.odor]}. Udara dan kebersihan sangat menentukan citra kabupaten.`,"Kampanye video dan media sosial tentang solusi sampah, plus tampilkan skor kewaspadaan ini sebagai data terbuka."],
+ ["Smart Economy",act<60?2:act<85?1:0,`${S.bsuA} bank sampah unit aktif, ${S.bsuT} tidak aktif, bank sampah induk baru ${S.bsi}. Unit hanya mengelola ±${S.bsuK} ton/hari, induk ±${S.bsiK} ton/hari. Organik tak terkelola ±${f1(c.org)} ton/hari belum jadi nilai ekonomi.`,"Hidupkan bank sampah, tambah bank sampah induk, dan arahkan organik ke maggot atau kompos sebagai usaha warga."],
+ ["Smart Living",E.top,`Risiko vektor ${LV[E.vector]}, bau dan jamur ${LV[E.odor]}, pembakaran dan pernapasan ${LV[E.burn]} (RH ${f1(w.hu)}%, ${f1(w.t)}°C).`,"PSN 3M Plus, angkut sampah yang menampung air, larang bakar terbuka, dan sarankan masker bagi kelompok rentan saat AQI naik."],
+ ["Smart Society",Math.max(E.burn,act<85?1:0),`Pembakaran sampah oleh warga ${LV[E.burn]}. Cakupan terkelola baru ${S.pt}% sehingga perilaku warga menentukan sisanya.`,"Edukasi pilah dari rumah, kerja bakti saluran sebelum hujan, dan lapor TPS liar lewat kanal warga."],
+ ["Smart Environment",2,`Open dumping, ±${f1(c.un)} ton/hari tidak terkelola, genangan ${LV[E.flood]}. Estimasi ${f1(c.co2)} ribu tCO₂e/tahun dan ${f1(c.lin)} m³/hari lindi.`,"Tutup bertahap open dumping menuju controlled atau sanitary landfill, kelola lindi, dan bersihkan saluran sebelum hujan."]];
+ $('pl').innerHTML=P.map(([t,l,d,x])=>`<div class="card"><h3>${t}<span class="pill c${l}">${LV[l]}</span></h3><p>${d}</p><p class="ac"><b>Aksi:</b> ${x.replace('${E.score}',E.score)}</p></div>`).join('');}
+
+function bench(){
+ const kel=S.tim*S.pt/100,sh=(S.bsuK+S.bsiK)/kel*100;
+ const K=[["Timbulan sampah",f1(S.tim)+" ton/hari","Urutan ke-2 dari 520 kab/kota, sekitar 1,8% timbulan nasional (144.349 ton/hari)"],
+ ["Sampah terkelola",f1(S.pt)+"%","Nasional "+f1(S.nas)+"%, median kabupaten 9,1%, Kab. Bogor 22,1%"],
+ ["Peran bank sampah",f1(sh)+"%","dari sampah terkelola. Induk ±"+S.bsiK+" ton/hari, unit ±"+S.bsuK+" ton/hari (±"+Math.round(S.bsuK*1000/S.bsuA)+" kg/hari per unit aktif)"],
+ ["Sanksi administrasi",S.psa+"%","Nasional "+S.psaN+"%, jadi di atas rata-rata"],
+ ["Dokumen RIPS","Belum disahkan","Hanya 49 dari 520 daerah (9,4%) yang sudah mengesahkan"],
+ ["Jenis TPA","Open dumping","308 dari 520 daerah masih open dumping, sanitary landfill hanya 5"]];
+ $('bm').innerHTML=K.map(([t,v,s])=>`<div class="card"><h3>${t}</h3><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
+ const P=[["Kab. Bogor",2784,"22,1","Open dumping","Draft, belum disahkan"],["Kab. Tangerang",2663,"4,38","Open dumping","Ada, belum disahkan"],["Kab. Bekasi",2404,"2,58","Open dumping","Sudah disahkan"],["Kab. Bandung",1762,"7,77","Open dumping","Ada, belum disahkan"],["Kota Tangerang",1370,"11,09","Open dumping","Ada, belum disahkan"],["Kab. Serang",1191,"0,99","Tidak punya TPA","Draft, belum disahkan"],["Kota Tangerang Selatan",1029,"58,46","Open dumping","Tidak ada"],["Kota Serang",521,"79,9","Controlled landfill","Ada, belum disahkan"]];
+ $('peer').innerHTML="<tr><th>Daerah</th><th>Timbulan (ton/hari)</th><th>Terkelola (%)</th><th>Jenis TPA</th><th>Status RIPS</th></tr>"+P.map(r=>`<tr${r[0]=="Kab. Tangerang"?' style="font-weight:600"':''}><td>${r[0]}</td><td>${f1(r[1])}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('');}
+
+function tiles(){
+ $('tiles').innerHTML=KEC.map(([n,c])=>{const w=C[c],t=w?engine(w,cur.a||SAMPLE).top:null;
+  return`<button class="tile ${t==null?"":"t"+t} ${c==$('kec').value?"on":""}" data-c="${c}">${n}<small>${w?LV[t]+", RH "+Math.round(w.hu)+"%":"belum dipindai"}</small></button>`}).join('');
+ document.querySelectorAll('.tile').forEach(b=>b.onclick=()=>{$('kec').value=b.dataset.c;load()});}
+
+async function load(){
+ const N=[],c=$('kec').value;let w,a,dv=[];
+ try{w=await getBMKG(c);C[c]=w;N.push(["ok","BMKG live: "+nameOf(c)])}catch(e){w={...SAMPLE};N.push(["warn","BMKG gagal ("+err(e)+"), memakai data contoh"])}
+ try{a=await getAQI();N.push(["ok","AQICN live"])}catch(e){a={...SAMPLE};N.push(["warn","AQICN: "+err(e)+", memakai data contoh"])}
+ const r=await Promise.allSettled(CFG.devices.map(getDev));dv=r.filter(x=>x.status=="fulfilled").map(x=>x.value);
+ N.push([dv.length?"ok":"warn",dv.length?`Smart Citizen live (${dv.length} device)`:"Smart Citizen gagal, memakai cuaca BMKG"]);
+ cur={w,a,dv};$('nt').innerHTML=N.map(([k,t])=>`<span class="${k}">${t}</span>`).join('');render(w,a,dv);}
+document.querySelectorAll('.ctl input').forEach(i=>i.oninput=()=>render(cur.w,cur.a,cur.dv));bench();$('rl').onclick=load;$('kec').onchange=load;
+$('sc').onclick=async()=>{$('sc').disabled=true;await Promise.allSettled(KEC.map(async([n,c])=>{try{C[c]=await getBMKG(c)}catch(e){}}));$('sc').disabled=false;tiles()};
+load();
+</script></main></body></html>
